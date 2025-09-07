@@ -239,7 +239,7 @@ Return JSON:
       confidence: parsed.confidence || 0.7,
     }
   } catch (error) {
-    console.log(`❌ Gemini timestamp error: ${error.message}`)
+    console.log(`❌ Gemini timestamp error: ${error instanceof Error ? error.message : String(error)}`)
     console.log(`🔄 Using smart fallback based on duration`)
     
     // Smart fallback based on duration
