@@ -6,16 +6,31 @@ interface MetricsRequestBody {
   videoId?: string
 }
 
+export async function OPTIONS(request: NextRequest) {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  })
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as MetricsRequestBody
     const { type, videoId } = body
 
     if (!type || !['search', 'play_start'].includes(type)) {
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         { error: 'Invalid type. Must be "search" or "play_start"' },
         { status: 400 }
       )
+      errorResponse.headers.set('Access-Control-Allow-Origin', '*')
+      errorResponse.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+      errorResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type')
+      return errorResponse
     }
 
     const today = new Date().toISOString().split('T')[0]
@@ -32,12 +47,20 @@ export async function POST(request: NextRequest) {
       await incrementCounter(`play_start_count:video:${videoId}:${today}`)
     }
 
-    return NextResponse.json({ ok: true })
+    const response = NextResponse.json({ ok: true })
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type')
+    return response
   } catch (error) {
     console.error('Metrics API error:', error)
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    errorResponse.headers.set('Access-Control-Allow-Origin', '*')
+    errorResponse.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+    errorResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type')
+    return errorResponse
   }
 }

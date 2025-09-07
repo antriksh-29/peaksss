@@ -8,6 +8,17 @@ interface SearchRequestBody {
   sessionId: string
 }
 
+export async function OPTIONS(request: NextRequest) {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  })
+}
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now()
   
@@ -16,17 +27,25 @@ export async function POST(request: NextRequest) {
     const { query, sessionId } = body
 
     if (!query || !query.trim()) {
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         { error: 'Search query is required' },
         { status: 400 }
       )
+      errorResponse.headers.set('Access-Control-Allow-Origin', '*')
+      errorResponse.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+      errorResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type')
+      return errorResponse
     }
 
     if (!sessionId) {
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         { error: 'Session ID is required' },
         { status: 400 }
       )
+      errorResponse.headers.set('Access-Control-Allow-Origin', '*')
+      errorResponse.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+      errorResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type')
+      return errorResponse
     }
 
     const trimmedQuery = query.trim()
@@ -69,7 +88,7 @@ export async function POST(request: NextRequest) {
     await incrementCounter('search_count')
     await incrementCounter(`search_count:${new Date().toISOString().split('T')[0]}`)
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       ok: true,
       videoId: result.videoId,
       start: result.start,
@@ -78,6 +97,13 @@ export async function POST(request: NextRequest) {
       fromCache,
       responseTime
     })
+
+    // Add CORS headers
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type')
+    
+    return response
   } catch (error) {
     const responseTime = Date.now() - startTime
     
@@ -100,9 +126,16 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Search API error:', error)
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       { error: 'Unable to find that song. Please try a different search.' },
       { status: 500 }
     )
+    
+    // Add CORS headers to error response
+    errorResponse.headers.set('Access-Control-Allow-Origin', '*')
+    errorResponse.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+    errorResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type')
+    
+    return errorResponse
   }
 }
