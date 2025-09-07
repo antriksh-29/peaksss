@@ -82,74 +82,79 @@ export default function PlayPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Clean Header */}
-      <header className="border-b border-border/50">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push('/')}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              Back
-            </Button>
-            <div className="h-4 w-px bg-border mx-2" />
-            <h1 className="font-semibold text-foreground">Peaksss</h1>
-          </div>
-          
-          <ThemeToggle />
-        </div>
-      </header>
+      {/* Theme Toggle - Top Right */}
+      <div className="absolute top-6 right-6 z-10">
+        <ThemeToggle />
+      </div>
 
-      <main className="max-w-4xl mx-auto px-6 py-8">
+      {/* Back Button - Top Left */}
+      <div className="absolute top-6 left-6 z-10">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push('/')}
+          className="text-muted-foreground hover:text-foreground rounded-full"
+        >
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          Back
+        </Button>
+      </div>
+
+      <main className="flex flex-col items-center justify-center min-h-screen px-6 pt-20">
         {/* Video Player */}
-        <div className="bg-card rounded-3xl overflow-hidden shadow-xl border border-border/50">
-          <div className="aspect-video bg-black">
-            <iframe
-              src={embedUrl}
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              onLoad={handlePlayerReady}
-            />
+        <div className="w-full max-w-4xl">
+          <div className="bg-card rounded-3xl overflow-hidden shadow-lg border border-border">
+            <div className="aspect-video bg-black">
+              <iframe
+                src={embedUrl}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                onLoad={handlePlayerReady}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-8 items-center justify-between">
-          {/* New Search */}
-          <form onSubmit={handleNewSearch} className="flex gap-2 w-full max-w-md">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        {/* Search Box */}
+        <div className="w-full max-w-2xl mt-12">
+          <form onSubmit={handleNewSearch}>
+            <div className="relative bg-card rounded-3xl border border-border shadow-sm">
               <Input
+                type="text"
                 placeholder="Search another song..."
                 value={newSearch}
                 onChange={(e) => setNewSearch(e.target.value)}
-                className="pl-10 rounded-full bg-card/50 border-border/50 focus:bg-card"
+                className="h-16 px-6 pr-16 text-lg bg-transparent border-0 rounded-3xl placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
                 disabled={isSearching}
               />
+              
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isSearching || !newSearch.trim()}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-foreground hover:bg-foreground/90 text-background rounded-full flex items-center justify-center transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSearching ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-background/20 border-t-background"></div>
+                ) : (
+                  <Search className="h-5 w-5" />
+                )}
+              </button>
             </div>
-            <Button 
-              type="submit" 
-              size="default"
-              disabled={!newSearch.trim() || isSearching}
-              className="rounded-full px-6"
-            >
-              {isSearching ? 'Searching...' : 'Search'}
-            </Button>
           </form>
+        </div>
 
-          {/* External Link */}
+        {/* External Link */}
+        <div className="mt-8">
           <Button
-            variant="outline"
-            size="default"
+            variant="ghost"
+            size="sm"
             onClick={() => window.open(`https://youtube.com/watch?v=${videoId}`, '_blank')}
-            className="rounded-full"
+            className="text-muted-foreground hover:text-foreground"
           >
             <ExternalLink className="h-4 w-4 mr-2" />
-            Full Video
+            Watch Full Video on YouTube
           </Button>
         </div>
       </main>
