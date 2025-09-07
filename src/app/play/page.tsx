@@ -103,7 +103,7 @@ export default function PlayPage() {
       <main className="flex flex-col items-center justify-center min-h-screen px-6 pt-20">
         {/* Video Player */}
         <div className="w-full max-w-4xl">
-          <div className="bg-card rounded-3xl overflow-hidden shadow-lg border border-border">
+          <div className="bg-card rounded-3xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700">
             <div className="aspect-video bg-black">
               <iframe
                 src={embedUrl}
@@ -119,7 +119,7 @@ export default function PlayPage() {
         {/* Search Box */}
         <div className="w-full max-w-2xl mt-12">
           <form onSubmit={handleNewSearch}>
-            <div className="relative bg-card rounded-3xl border border-border shadow-sm">
+            <div className="relative bg-card rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm">
               <Input
                 type="text"
                 placeholder="Search another song..."

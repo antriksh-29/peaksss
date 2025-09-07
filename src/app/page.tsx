@@ -70,7 +70,7 @@ export default function Home() {
         {/* Search Box */}
         <div className="w-full max-w-2xl mt-12">
           <form onSubmit={handleSubmit}>
-            <div className="relative bg-card rounded-3xl border border-border shadow-sm">
+            <div className="relative bg-card rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm">
               <Input
                 type="text"
                 placeholder="About You by The 1975"
