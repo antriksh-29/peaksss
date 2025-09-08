@@ -137,9 +137,9 @@ export function SearchForm({
 
       {isSearching && (
         <div className="mt-6 flex items-center justify-center gap-2">
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-2 h-2 bg-secondary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+          <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+          <div className="w-2 h-2 bg-blue-900 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+          <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce"></div>
           <p className="ml-3 text-muted-foreground">Finding the peak part of your song</p>
         </div>
       )}
