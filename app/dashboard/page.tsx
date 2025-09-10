@@ -242,7 +242,7 @@ export default function DashboardPage() {
                       {record?.youtubeTitle || record?.songName || '-'}
                     </td>
                     <td className="p-4 font-mono text-xs">
-                      {record?.videoId ? (
+                      {record?.videoId && typeof record.videoId === 'string' ? (
                         <a 
                           href={`https://youtube.com/watch?v=${record.videoId}`}
                           target="_blank"
