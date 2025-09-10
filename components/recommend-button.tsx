@@ -12,13 +12,17 @@ interface RecommendButtonProps {
     confidence: number
     query: string
   }) => void
+  onRecommendationStart?: () => void
+  isLoading?: boolean
 }
 
-export function RecommendButton({ songTitle, onRecommendationComplete }: RecommendButtonProps) {
-  const [isLoading, setIsLoading] = React.useState(false)
+export function RecommendButton({ songTitle, onRecommendationComplete, onRecommendationStart, isLoading: externalLoading }: RecommendButtonProps) {
+  const [internalLoading, setInternalLoading] = React.useState(false)
+  const isLoading = externalLoading || internalLoading
 
   const handleRecommend = async () => {
-    setIsLoading(true)
+    setInternalLoading(true)
+    onRecommendationStart?.()  // Call the loading state handler
     console.log("[v0] ===== RECOMMENDATION BUTTON START =====")
     console.log("[v0] Recommendation started at:", new Date().toISOString(), "for song:", songTitle)
 
@@ -115,7 +119,7 @@ export function RecommendButton({ songTitle, onRecommendationComplete }: Recomme
       console.error("[v0] ===== RECOMMENDATION BUTTON ERROR END =====")
       alert("Sorry, we couldn't find a similar song. Please try again.")
     } finally {
-      setIsLoading(false)
+      setInternalLoading(false)
     }
   }
 
