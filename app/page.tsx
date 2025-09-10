@@ -24,6 +24,7 @@ function HomePageContent() {
   const [searchResult, setSearchResult] = React.useState<SearchResult | null>(null)
   const [showToast, setShowToast] = React.useState(false)
   const [isRecommendation, setIsRecommendation] = React.useState(false)
+  const [currentVideoTitle, setCurrentVideoTitle] = React.useState<string>("")
 
   React.useEffect(() => {
     const videoId = searchParams.get("v")
@@ -45,14 +46,33 @@ function HomePageContent() {
 
   const handleSearch = async (query: string) => {
     setIsLoading(true)
-    setLoadingText("finding the peak part of your song")
+    setLoadingText("finding the peak part of your song (takes ~30 sec - please sit tight)")
     setSearchResult(null) // Clear previous results
   }
 
-  const handleSearchComplete = (result: SearchResult) => {
+  const fetchVideoTitle = React.useCallback(async (videoId: string) => {
+    try {
+      const response = await fetch(
+        `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
+      )
+      if (response.ok) {
+        const data = await response.json()
+        return data.title || ""
+      }
+    } catch (error) {
+      console.error("Failed to fetch video title:", error)
+    }
+    return ""
+  }, [])
+
+  const handleSearchComplete = async (result: SearchResult) => {
     setSearchResult(result)
     setIsLoading(false)
     setIsRecommendation(false)
+    
+    // Fetch and store the video title
+    const title = await fetchVideoTitle(result.videoId)
+    setCurrentVideoTitle(title || result.query)
   }
 
   const handleListenAgain = () => {
@@ -68,10 +88,14 @@ function HomePageContent() {
     setShowToast(true)
   }
 
-  const handleRecommendationComplete = (result: SearchResult) => {
+  const handleRecommendationComplete = async (result: SearchResult) => {
     setSearchResult(result)
     setIsRecommendation(true)
     setIsLoading(false)
+
+    // Fetch and store the new video title for recommendations
+    const title = await fetchVideoTitle(result.videoId)
+    setCurrentVideoTitle(title || result.query)
 
     // Auto-update the iframe with new recommendation
     setTimeout(() => {
@@ -84,7 +108,7 @@ function HomePageContent() {
 
   const handleRecommendationStart = () => {
     setIsLoading(true)
-    setLoadingText("finding your next favourite song")
+    setLoadingText("finding the peak part of a similar song (takes ~30 sec - please sit tight)")
   }
 
   return (
@@ -104,7 +128,10 @@ function HomePageContent() {
         {/* Search Form */}
         <div className="w-full max-w-2xl mx-auto">
           <SearchForm
-            placeholder="about you by the 1975"
+            placeholder={isRecommendation && currentVideoTitle 
+              ? `songs similar to ${currentVideoTitle.toLowerCase()}`
+              : "about you by the 1975"
+            }
             onSearch={handleSearch}
             onSearchComplete={handleSearchComplete}
             isLoading={isLoading}
@@ -123,14 +150,15 @@ function HomePageContent() {
           </div>
         )}
 
-        {searchResult && !isLoading && (
-          <div className="w-full max-w-4xl lg:max-w-3xl mx-auto mt-12 space-y-6">
-            {isRecommendation && (
-              <div className="text-sm text-muted-foreground/80 mb-2">
-                <span className="bg-primary/10 px-2 py-1 rounded-full">recommended for you</span>
-              </div>
-            )}
+        {/* Recommended for you indicator - placed between search and video */}
+        {searchResult && isRecommendation && !isLoading && (
+          <div className="flex justify-center mt-6 mb-4">
+            <span className="bg-primary/10 px-3 py-2 rounded-full text-sm text-muted-foreground/80">recommended for you</span>
+          </div>
+        )}
 
+        {searchResult && !isLoading && (
+          <div className="w-full max-w-4xl lg:max-w-3xl mx-auto mt-8 space-y-6">
             {/* YouTube Embed - reduced to 80% size on desktop */}
             <div className="aspect-video w-full rounded-lg overflow-hidden bg-black">
               <iframe

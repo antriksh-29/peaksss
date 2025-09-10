@@ -33,6 +33,16 @@ export async function incrementCounter(key: string): Promise<number> {
   }
 }
 
+export async function getCounter(key: string): Promise<number> {
+  try {
+    const value = await redis.get<number>(key)
+    return value || 0
+  } catch (error) {
+    console.error('Redis GET counter error:', error)
+    return 0
+  }
+}
+
 // Session Management Functions
 export async function createOrUpdateSession(sessionId: string): Promise<void> {
   try {

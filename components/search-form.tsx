@@ -140,7 +140,7 @@ export function SearchForm({
           <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
           <div className="w-2 h-2 bg-secondary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
           <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-          <p className="ml-3 text-muted-foreground">finding the peak part of your song</p>
+          <p className="ml-3 text-muted-foreground">finding the peak part of your song (takes ~30 sec - please sit tight)</p>
         </div>
       )}
     </div>
