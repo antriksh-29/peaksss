@@ -4,21 +4,37 @@ import * as React from "react"
 import { Home, TrendingUp, TrendingDown, Music, Play, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+interface SearchRecord {
+  sessionId: string
+  query: string
+  songName?: string
+  videoId?: string
+  responseTimeMs: number
+  timestamp: string
+  success: boolean
+  searchType: 'search' | 'recommendation'
+  youtubeTitle?: string
+}
+
 interface DashboardStats {
-  total: {
-    searches: number
-    plays: number
-    conversionRate: number
+  metrics: {
+    total: {
+      searches: number
+      plays: number
+      conversionRate: number
+      uniqueSessions: number
+    }
+    today: {
+      searches: number
+      plays: number
+      date: string
+    }
+    growth: {
+      searches: number
+      plays: number
+    }
   }
-  today: {
-    searches: number
-    plays: number
-    date: string
-  }
-  growth: {
-    searches: number
-    plays: number
-  }
+  sessions: SearchRecord[]
 }
 
 export default function DashboardPage() {
@@ -108,22 +124,22 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">total searches</p>
-                <p className="text-2xl font-bold">{stats?.total.searches.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{stats?.metrics.total.searches.toLocaleString()}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                 <Search className="w-6 h-6 text-blue-600" />
               </div>
             </div>
             <div className="flex items-center mt-4 text-sm">
-              <span className="text-muted-foreground">today: {stats?.today.searches}</span>
-              {stats && stats.growth.searches !== 0 && (
-                <div className={`ml-2 flex items-center ${stats.growth.searches > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {stats.growth.searches > 0 ? (
+              <span className="text-muted-foreground">today: {stats?.metrics.today.searches}</span>
+              {stats && stats.metrics.growth.searches !== 0 && (
+                <div className={`ml-2 flex items-center ${stats.metrics.growth.searches > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {stats.metrics.growth.searches > 0 ? (
                     <TrendingUp className="w-3 h-3 mr-1" />
                   ) : (
                     <TrendingDown className="w-3 h-3 mr-1" />
                   )}
-                  <span>{Math.abs(stats.growth.searches)}%</span>
+                  <span>{Math.abs(stats.metrics.growth.searches)}%</span>
                 </div>
               )}
             </div>
@@ -134,40 +150,40 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">total plays</p>
-                <p className="text-2xl font-bold">{stats?.total.plays.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{stats?.metrics.total.plays.toLocaleString()}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <Play className="w-6 h-6 text-green-600" />
               </div>
             </div>
             <div className="flex items-center mt-4 text-sm">
-              <span className="text-muted-foreground">today: {stats?.today.plays}</span>
-              {stats && stats.growth.plays !== 0 && (
-                <div className={`ml-2 flex items-center ${stats.growth.plays > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {stats.growth.plays > 0 ? (
+              <span className="text-muted-foreground">today: {stats?.metrics.today.plays}</span>
+              {stats && stats.metrics.growth.plays !== 0 && (
+                <div className={`ml-2 flex items-center ${stats.metrics.growth.plays > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {stats.metrics.growth.plays > 0 ? (
                     <TrendingUp className="w-3 h-3 mr-1" />
                   ) : (
                     <TrendingDown className="w-3 h-3 mr-1" />
                   )}
-                  <span>{Math.abs(stats.growth.plays)}%</span>
+                  <span>{Math.abs(stats.metrics.growth.plays)}%</span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Conversion Rate */}
+          {/* Unique Sessions */}
           <div className="bg-card rounded-lg border p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">conversion rate</p>
-                <p className="text-2xl font-bold">{stats?.total.conversionRate}%</p>
+                <p className="text-sm font-medium text-muted-foreground">unique sessions</p>
+                <p className="text-2xl font-bold">{stats?.metrics.total.uniqueSessions.toLocaleString()}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                 <Music className="w-6 h-6 text-purple-600" />
               </div>
             </div>
             <div className="flex items-center mt-4 text-sm">
-              <span className="text-muted-foreground">searches that led to plays</span>
+              <span className="text-muted-foreground">conversion: {stats?.metrics.total.conversionRate}%</span>
             </div>
           </div>
 
@@ -176,15 +192,87 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">today's activity</p>
-                <p className="text-2xl font-bold">{(stats?.today.searches || 0) + (stats?.today.plays || 0)}</p>
+                <p className="text-2xl font-bold">{(stats?.metrics.today.searches || 0) + (stats?.metrics.today.plays || 0)}</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-orange-600" />
               </div>
             </div>
             <div className="flex items-center mt-4 text-sm">
-              <span className="text-muted-foreground">{stats?.today.date}</span>
+              <span className="text-muted-foreground">{stats?.metrics.today.date}</span>
             </div>
+          </div>
+        </div>
+
+        {/* Session Activity Table */}
+        <div className="bg-card rounded-lg border shadow-sm">
+          <div className="p-6 border-b">
+            <h3 className="text-lg font-semibold">recent session activity</h3>
+            <p className="text-sm text-muted-foreground mt-1">latest searches and recommendations</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b bg-muted/30">
+                <tr>
+                  <th className="text-left p-4 font-medium">session id</th>
+                  <th className="text-left p-4 font-medium">type</th>
+                  <th className="text-left p-4 font-medium">query</th>
+                  <th className="text-left p-4 font-medium">youtube title</th>
+                  <th className="text-left p-4 font-medium">video id</th>
+                  <th className="text-left p-4 font-medium">time (ms)</th>
+                  <th className="text-left p-4 font-medium">timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stats?.sessions.map((record, index) => (
+                  <tr key={`${record.sessionId}-${record.timestamp}`} className="border-b hover:bg-muted/20">
+                    <td className="p-4 font-mono text-xs">
+                      {record.sessionId.slice(0, 8)}...
+                    </td>
+                    <td className="p-4">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        record.searchType === 'search' 
+                          ? 'bg-blue-100 text-blue-800' 
+                          : 'bg-green-100 text-green-800'
+                      }`}>
+                        {record.searchType}
+                      </span>
+                    </td>
+                    <td className="p-4 text-muted-foreground">
+                      {record.searchType === 'search' ? record.query : '-'}
+                    </td>
+                    <td className="p-4 max-w-xs truncate">
+                      {record.youtubeTitle || record.songName || '-'}
+                    </td>
+                    <td className="p-4 font-mono text-xs">
+                      {record.videoId ? (
+                        <a 
+                          href={`https://youtube.com/watch?v=${record.videoId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          {record.videoId.slice(0, 11)}
+                        </a>
+                      ) : '-'}
+                    </td>
+                    <td className="p-4 text-muted-foreground">
+                      {record.responseTimeMs.toLocaleString()}
+                    </td>
+                    <td className="p-4 text-muted-foreground text-xs">
+                      {new Date(record.timestamp).toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+                {(!stats?.sessions || stats.sessions.length === 0) && (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center text-muted-foreground">
+                      no session data available
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 

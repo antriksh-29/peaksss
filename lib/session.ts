@@ -15,6 +15,8 @@ export interface SearchRecord {
   responseTimeMs: number
   timestamp: string
   success: boolean
+  searchType: 'search' | 'recommendation'
+  youtubeTitle?: string
 }
 
 export function generateSessionId(): string {
@@ -36,8 +38,10 @@ export function createSearchRecord(
   sessionId: string,
   query: string,
   responseTimeMs: number,
+  searchType: 'search' | 'recommendation' = 'search',
   songName?: string,
   videoId?: string,
+  youtubeTitle?: string,
   success: boolean = true
 ): SearchRecord {
   return {
@@ -47,6 +51,8 @@ export function createSearchRecord(
     videoId,
     responseTimeMs,
     timestamp: new Date().toISOString(),
-    success
+    success,
+    searchType,
+    youtubeTitle
   }
 }

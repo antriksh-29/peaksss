@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getCounter } from '@/lib/redis'
+import { getCounter, redis } from '@/lib/redis'
+import { SearchRecord } from '@/lib/session'
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,21 +27,48 @@ export async function GET(request: NextRequest) {
       ? Math.round(((todayPlays - yesterdayPlays) / yesterdayPlays) * 100)
       : 0
 
-    const stats = {
-      total: {
-        searches: totalSearches,
-        plays: totalPlays,
-        conversionRate: totalSearches > 0 ? Math.round((totalPlays / totalSearches) * 100) : 0
-      },
-      today: {
-        searches: todaySearches,
-        plays: todayPlays,
-        date: today
-      },
-      growth: {
-        searches: searchGrowth,
-        plays: playGrowth
+    // Get session data for the table
+    const activeSessions = await redis.smembers('active_sessions') || []
+    const totalUniqueSessions = activeSessions.length
+    
+    // Get recent search records (last 50 for performance)
+    const searchKeys = await redis.keys('search:*')
+    const recentSearchKeys = searchKeys.sort().slice(-50)
+    
+    const searchRecords: SearchRecord[] = []
+    for (const key of recentSearchKeys) {
+      try {
+        const record = await redis.get<SearchRecord>(key)
+        if (record) {
+          searchRecords.push(record)
+        }
+      } catch (error) {
+        console.error('Error fetching search record:', error)
       }
+    }
+    
+    // Sort by timestamp (newest first)
+    searchRecords.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+
+    const stats = {
+      metrics: {
+        total: {
+          searches: totalSearches,
+          plays: totalPlays,
+          conversionRate: totalSearches > 0 ? Math.round((totalPlays / totalSearches) * 100) : 0,
+          uniqueSessions: totalUniqueSessions
+        },
+        today: {
+          searches: todaySearches,
+          plays: todayPlays,
+          date: today
+        },
+        growth: {
+          searches: searchGrowth,
+          plays: playGrowth
+        }
+      },
+      sessions: searchRecords.slice(0, 30) // Return last 30 records
     }
 
     return NextResponse.json({

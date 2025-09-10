@@ -18,6 +18,7 @@ interface SearchFormProps {
   }) => void
   className?: string
   isLoading?: boolean
+  clearOnRecommendation?: boolean
 }
 
 const trackMetric = async (type: string, videoId: string) => {
@@ -38,11 +39,19 @@ export function SearchForm({
   onSearchComplete,
   className = "",
   isLoading: externalLoading = false,
+  clearOnRecommendation = false,
 }: SearchFormProps) {
   const [query, setQuery] = React.useState("")
   const [isSearching, setIsSearching] = React.useState(false)
 
   const isLoading = externalLoading || isSearching
+
+  // Clear query when clearOnRecommendation becomes true
+  React.useEffect(() => {
+    if (clearOnRecommendation) {
+      setQuery("")
+    }
+  }, [clearOnRecommendation])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -136,11 +145,14 @@ export function SearchForm({
       </form>
 
       {isSearching && (
-        <div className="mt-6 flex items-center justify-center gap-2">
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-2 h-2 bg-secondary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-          <p className="ml-3 text-muted-foreground">finding the peak part of your song (takes ~30 sec - please sit tight)</p>
+        <div className="mt-6 flex flex-col items-center gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+            <div className="w-2 h-2 bg-secondary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+            <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+            <p className="ml-3 text-muted-foreground">finding the peak part of your song</p>
+          </div>
+          <span className="text-muted-foreground/60 text-sm">(takes ~30 sec - please sit tight 🥲)</span>
         </div>
       )}
     </div>

@@ -25,6 +25,7 @@ function HomePageContent() {
   const [showToast, setShowToast] = React.useState(false)
   const [isRecommendation, setIsRecommendation] = React.useState(false)
   const [currentVideoTitle, setCurrentVideoTitle] = React.useState<string>("")
+  const [clearSearchInput, setClearSearchInput] = React.useState(false)
 
   React.useEffect(() => {
     const videoId = searchParams.get("v")
@@ -46,7 +47,7 @@ function HomePageContent() {
 
   const handleSearch = async (query: string) => {
     setIsLoading(true)
-    setLoadingText("finding the peak part of your song (takes ~30 sec - please sit tight)")
+    setLoadingText("finding the peak part of your song")
     setSearchResult(null) // Clear previous results
   }
 
@@ -73,6 +74,9 @@ function HomePageContent() {
     // Fetch and store the video title
     const title = await fetchVideoTitle(result.videoId)
     setCurrentVideoTitle(title || result.query)
+    
+    // Reset the clear flag when performing a new search
+    setClearSearchInput(false)
   }
 
   const handleListenAgain = () => {
@@ -97,6 +101,10 @@ function HomePageContent() {
     const title = await fetchVideoTitle(result.videoId)
     setCurrentVideoTitle(title || result.query)
 
+    // Clear the search input and reset the flag
+    setClearSearchInput(true)
+    setTimeout(() => setClearSearchInput(false), 100)
+
     // Auto-update the iframe with new recommendation
     setTimeout(() => {
       const iframe = document.querySelector("iframe") as HTMLIFrameElement
@@ -108,7 +116,7 @@ function HomePageContent() {
 
   const handleRecommendationStart = () => {
     setIsLoading(true)
-    setLoadingText("finding the peak part of a similar song (takes ~30 sec - please sit tight)")
+    setLoadingText("finding the peak part of a similar song")
   }
 
   return (
@@ -135,6 +143,7 @@ function HomePageContent() {
             onSearch={handleSearch}
             onSearchComplete={handleSearchComplete}
             isLoading={isLoading}
+            clearOnRecommendation={clearSearchInput}
           />
         </div>
 
@@ -207,13 +216,16 @@ function HomePageContent() {
             </div>
 
             {isLoading && (
-              <div className="flex justify-center items-center gap-2 mt-4">
-                <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
-                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
-                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+              <div className="flex flex-col items-center gap-2 mt-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+                  </div>
+                  <span className="text-muted-foreground">{loadingText}</span>
                 </div>
-                <span className="text-muted-foreground">{loadingText}</span>
+                <span className="text-muted-foreground/60 text-sm">(takes ~30 sec - please sit tight 🥲)</span>
               </div>
             )}
           </div>
