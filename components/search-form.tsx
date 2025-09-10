@@ -33,7 +33,7 @@ const trackMetric = async (type: string, videoId: string) => {
 }
 
 export function SearchForm({
-  placeholder = "About You by The 1975",
+  placeholder = "about you by the 1975",
   onSearch,
   onSearchComplete,
   className = "",
@@ -106,7 +106,7 @@ export function SearchForm({
     } catch (error) {
       console.error("[v0] Search error:", error)
       console.log("[v0] Total failed search time:", Date.now() - startTime, "ms")
-      alert("Sorry, we couldn't find the peak part of that song. Please try another search.")
+      alert("sorry, we couldn't find the peak part of that song. please try another search.")
       setIsSearching(false)
     }
   }
@@ -140,7 +140,7 @@ export function SearchForm({
           <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
           <div className="w-2 h-2 bg-secondary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
           <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-          <p className="ml-3 text-muted-foreground">Finding the peak part of your song</p>
+          <p className="ml-3 text-muted-foreground">finding the peak part of your song</p>
         </div>
       )}
     </div>

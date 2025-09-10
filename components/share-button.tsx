@@ -46,7 +46,7 @@ export function ShareButton({ videoId, start, end, songName, onShare }: ShareBut
       const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://peaksss.com"
       const shareableLink = `${baseUrl}/?v=${videoId}&start=${start}&end=${end}&q=${encodeURIComponent(songName)}`
 
-      const clipboardMessage = `I just used Peaksss to listen to the best part of "${actualSongTitle}". You should also give it a listen - ${shareableLink}`
+      const clipboardMessage = `i just used peaksss to listen to the best part of "${actualSongTitle}". you should also give it a listen - ${shareableLink}`
 
       // Copy to clipboard
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -88,7 +88,7 @@ export function ShareButton({ videoId, start, end, songName, onShare }: ShareBut
         ) : (
           <Share2 className="h-4 w-4" />
         )}
-        <span>{isSharing ? "Copying..." : justShared ? "Copied!" : "Share"}</span>
+        <span>{isSharing ? "copying..." : justShared ? "copied!" : "share"}</span>
       </span>
     </button>
   )

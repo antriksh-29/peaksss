@@ -92,13 +92,13 @@ function PlayPageContent() {
           <div className="w-20 h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
             <span className="text-3xl">🎵</span>
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Oops! Missing song data</h1>
+          <h1 className="text-2xl font-bold text-foreground">oops! missing song data</h1>
           <p className="text-muted-foreground leading-relaxed">
-            It looks like you arrived here without searching for a song. Let's get you back to discovering music!
+            it looks like you arrived here without searching for a song. let's get you back to discovering music!
           </p>
           <Button onClick={handleGoHome} className="mt-6 bg-primary hover:bg-primary/90">
             <Home className="w-4 h-4 mr-2" />
-            Go Home
+            go home
           </Button>
         </div>
       </div>
@@ -119,20 +119,20 @@ function PlayPageContent() {
         <div className="flex items-center justify-between mb-4">
           <Button onClick={handleGoHome} variant="ghost" className="text-muted-foreground hover:text-foreground">
             <Home className="w-4 h-4 mr-2" />
-            Back to Home
+            back to home
           </Button>
         </div>
 
         {/* Search Form */}
         <div className="w-full max-w-2xl mx-auto">
-          <SearchForm placeholder="Search another song..." onSearch={handleNewSearch} isLoading={isLoading} />
+          <SearchForm placeholder="search another song..." onSearch={handleNewSearch} isLoading={isLoading} />
 
           {isLoading && (
             <div className="mt-4 flex items-center justify-center gap-2">
               <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
               <div className="w-2 h-2 bg-secondary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
               <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-              <p className="ml-3 text-muted-foreground">Finding the peak part of your song...</p>
+              <p className="ml-3 text-muted-foreground">finding the peak part of your song...</p>
             </div>
           )}
         </div>
@@ -159,7 +159,7 @@ function PlayPageContent() {
             className="flex items-center gap-2 h-12 px-6 bg-card hover:bg-accent border-border hover:border-primary/20 transition-all"
           >
             <ExternalLink className="h-4 w-4" />
-            Watch Full Video on YouTube
+            watch full video on youtube
           </Button>
 
           <Button
@@ -168,7 +168,7 @@ function PlayPageContent() {
             className="flex items-center gap-2 h-12 px-6 bg-card hover:bg-accent border-border hover:border-secondary/20 transition-all"
           >
             <RotateCcw className="h-4 w-4" />
-            Play song again
+            play song again
           </Button>
         </div>
       </div>

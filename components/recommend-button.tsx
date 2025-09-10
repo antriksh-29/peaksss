@@ -117,7 +117,7 @@ export function RecommendButton({ songTitle, onRecommendationComplete, onRecomme
       console.error("[v0] Error message:", err instanceof Error ? err.message : String(err))
       console.error("[v0] Error stack:", err instanceof Error ? err.stack : "No stack trace")
       console.error("[v0] ===== RECOMMENDATION BUTTON ERROR END =====")
-      alert("Sorry, we couldn't find a similar song. Please try again.")
+      alert("sorry, we couldn't find a similar song. please try again.")
     } finally {
       setInternalLoading(false)
     }
@@ -130,7 +130,7 @@ export function RecommendButton({ songTitle, onRecommendationComplete, onRecomme
       className="w-full px-3 py-1.5 text-sm font-medium rounded-lg border border-muted-foreground/30 bg-background hover:bg-muted/50 text-muted-foreground hover:text-foreground shadow-sm transition-all duration-200 flex items-center gap-2 disabled:opacity-50"
     >
       <Music className="w-4 h-4 text-muted-foreground" />
-      <span className="animate-shimmer-rainbow">{isLoading ? "Finding..." : "Discover Similar Songs"}</span>
+      <span className="animate-shimmer-rainbow">{isLoading ? "finding..." : "discover similar songs"}</span>
     </button>
   )
 }

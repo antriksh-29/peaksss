@@ -45,7 +45,7 @@ function HomePageContent() {
 
   const handleSearch = async (query: string) => {
     setIsLoading(true)
-    setLoadingText("Finding the peak part of your song")
+    setLoadingText("finding the peak part of your song")
     setSearchResult(null) // Clear previous results
   }
 
@@ -84,7 +84,7 @@ function HomePageContent() {
 
   const handleRecommendationStart = () => {
     setIsLoading(true)
-    setLoadingText("Finding your next favourite song")
+    setLoadingText("finding your next favourite song")
   }
 
   return (
@@ -94,17 +94,17 @@ function HomePageContent() {
         {/* Logo/Title */}
         <div className="space-y-6">
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-tight relative px-8 mx-auto">
-            <span className="animate-shimmer-rainbow">Peaksss</span>
+            <span className="animate-shimmer-rainbow">peaksss</span>
           </h1>
           <p className="text-2xl md:text-3xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
-            Listen to the peak part of your fav songs
+            listen to the peak part of your fav songs
           </p>
         </div>
 
         {/* Search Form */}
         <div className="w-full max-w-2xl mx-auto">
           <SearchForm
-            placeholder="About You by The 1975"
+            placeholder="about you by the 1975"
             onSearch={handleSearch}
             onSearchComplete={handleSearchComplete}
             isLoading={isLoading}
@@ -119,7 +119,7 @@ function HomePageContent() {
 
         {!searchResult && (
           <div className="pt-4 text-lg text-muted-foreground/80">
-            <p>✨ AI finds and plays the best moment of any song of your choice</p>
+            <p>✨ ai finds and plays the best moment of any song of your choice</p>
           </div>
         )}
 
@@ -127,7 +127,7 @@ function HomePageContent() {
           <div className="w-full max-w-4xl lg:max-w-3xl mx-auto mt-12 space-y-6">
             {isRecommendation && (
               <div className="text-sm text-muted-foreground/80 mb-2">
-                <span className="bg-primary/10 px-2 py-1 rounded-full">Recommended for you</span>
+                <span className="bg-primary/10 px-2 py-1 rounded-full">recommended for you</span>
               </div>
             )}
 
@@ -162,7 +162,7 @@ function HomePageContent() {
                 >
                   <div className="flex items-center gap-2">
                     <Headphones className="w-4 h-4" />
-                    Listen Again
+                    listen again
                   </div>
                 </button>
 
@@ -203,10 +203,10 @@ export default function HomePage() {
           <div className="w-full max-w-5xl space-y-8 text-center">
             <div className="space-y-6">
               <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-tight relative px-8 mx-auto">
-                <span className="animate-shimmer-rainbow">Peaksss</span>
+                <span className="animate-shimmer-rainbow">peaksss</span>
               </h1>
               <p className="text-2xl md:text-3xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
-                Listen to the peak part of your fav songs
+                listen to the peak part of your fav songs
               </p>
             </div>
             <div className="flex justify-center items-center gap-2">
