@@ -122,7 +122,7 @@ export function SearchForm({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             disabled={isLoading}
-            className="h-16 pl-14 pr-16 text-lg rounded-2xl bg-card border-2 border-black hover:border-black/80 focus:border-black shadow-lg focus:shadow-xl transition-all duration-200 focus:ring-2 focus:ring-black/20 placeholder:text-muted-foreground/60"
+            className="h-16 pl-14 pr-16 text-lg rounded-2xl bg-card border-2 border-black hover:border-black/80 focus:border-black shadow-lg focus:shadow-xl transition-all duration-200 focus:ring-0 focus:ring-offset-0 placeholder:text-muted-foreground/60"
           />
           <Button
             type="submit"
@@ -137,9 +137,9 @@ export function SearchForm({
 
       {isSearching && (
         <div className="mt-6 flex items-center justify-center gap-2">
-          <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-2 h-2 bg-blue-900 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce"></div>
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+          <div className="w-2 h-2 bg-secondary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
           <p className="ml-3 text-muted-foreground">Finding the peak part of your song</p>
         </div>
       )}
