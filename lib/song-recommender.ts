@@ -74,14 +74,19 @@ Return JSON format:
     
     console.log(`🤖 Gemini recommendation response: ${response.substring(0, 200)}...`)
     
-    // Extract JSON from response
-    const jsonMatch = response.match(/\{[\s\S]*?\}/)
-    if (!jsonMatch) {
-      console.log('❌ No JSON found in Gemini recommendation response')
-      throw new Error('Failed to parse Gemini recommendation response')
+    // Extract JSON from response - handle markdown code blocks
+    let jsonText = response
+    if (response.includes('```json')) {
+      const codeMatch = response.match(/```json\s*([\s\S]*?)\s*```/)
+      jsonText = codeMatch ? codeMatch[1] : response
+      console.log('🔍 Extracted JSON from markdown code block')
+    } else {
+      const jsonMatch = response.match(/\{[\s\S]*?\}/)
+      jsonText = jsonMatch ? jsonMatch[0] : response
     }
     
-    const parsed = JSON.parse(jsonMatch[0])
+    console.log('🔍 JSON to parse:', jsonText.substring(0, 100) + '...')
+    const parsed = JSON.parse(jsonText)
     const recommendations: RecommendationResult[] = parsed.recommendations || []
     
     const processingTime = Date.now() - startTime
