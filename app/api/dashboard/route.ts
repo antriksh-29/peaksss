@@ -4,6 +4,11 @@ import { SearchRecord } from '@/lib/session'
 
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url)
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '30')
+    const offset = (page - 1) * limit
+
     const today = new Date().toISOString().split('T')[0]
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0]
     
@@ -85,7 +90,14 @@ export async function GET(request: NextRequest) {
           plays: playGrowth || 0
         }
       },
-      sessions: Array.isArray(searchRecords) ? searchRecords.slice(0, 30) : [] // Return last 30 records or empty array
+      sessions: Array.isArray(searchRecords) ? searchRecords.slice(offset, offset + limit) : [], // Return paginated records
+      pagination: {
+        currentPage: page,
+        totalRecords: Array.isArray(searchRecords) ? searchRecords.length : 0,
+        totalPages: Math.ceil((Array.isArray(searchRecords) ? searchRecords.length : 0) / limit),
+        hasNextPage: offset + limit < (Array.isArray(searchRecords) ? searchRecords.length : 0),
+        hasPrevPage: page > 1
+      }
     }
 
     return NextResponse.json({

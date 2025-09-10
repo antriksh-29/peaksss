@@ -35,17 +35,25 @@ interface DashboardStats {
     }
   }
   sessions: SearchRecord[]
+  pagination?: {
+    currentPage: number
+    totalRecords: number
+    totalPages: number
+    hasNextPage: boolean
+    hasPrevPage: boolean
+  }
 }
 
 export default function DashboardPage() {
   const [stats, setStats] = React.useState<DashboardStats | null>(null)
   const [isLoading, setIsLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
+  const [currentPage, setCurrentPage] = React.useState(1)
 
-  React.useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await fetch('/api/dashboard')
+  const fetchStats = async (page: number = 1) => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/dashboard?page=${page}&limit=30`)
         if (!response.ok) {
           const errorText = await response.text()
           throw new Error(`failed to fetch dashboard data: ${response.status} - ${errorText}`)
@@ -59,9 +67,11 @@ export default function DashboardPage() {
               today: { searches: 0, plays: 0, date: new Date().toISOString().split('T')[0] },
               growth: { searches: 0, plays: 0 }
             },
-            sessions: Array.isArray(data.data.sessions) ? data.data.sessions : []
+            sessions: Array.isArray(data.data.sessions) ? data.data.sessions : [],
+            pagination: data.data.pagination
           }
           setStats(validData)
+          setCurrentPage(page)
         } else {
           throw new Error(data.error || 'invalid response format')
         }
@@ -73,8 +83,9 @@ export default function DashboardPage() {
       }
     }
 
-    fetchStats()
-  }, [])
+    React.useEffect(() => {
+      fetchStats(1)
+    }, [])
 
   const handleGoHome = () => {
     window.location.href = "/"
@@ -273,6 +284,36 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Pagination */}
+        {stats?.pagination && stats.pagination.totalPages > 1 && (
+          <div className="bg-card rounded-lg border p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-muted-foreground">
+                Showing page {stats.pagination.currentPage} of {stats.pagination.totalPages} 
+                ({stats.pagination.totalRecords} total records)
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => fetchStats(currentPage - 1)}
+                  disabled={!stats.pagination.hasPrevPage || isLoading}
+                  variant="outline"
+                  size="sm"
+                >
+                  Previous
+                </Button>
+                <Button
+                  onClick={() => fetchStats(currentPage + 1)}
+                  disabled={!stats.pagination.hasNextPage || isLoading}
+                  variant="outline" 
+                  size="sm"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Quick Actions */}
         <div className="bg-card rounded-lg border p-6 shadow-sm">
           <h3 className="text-lg font-semibold mb-4">quick actions</h3>
@@ -282,7 +323,7 @@ export default function DashboardPage() {
               discover music
             </Button>
             <Button 
-              onClick={() => window.location.reload()} 
+              onClick={() => fetchStats(currentPage)} 
               variant="outline"
             >
               refresh data

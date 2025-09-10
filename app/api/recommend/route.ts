@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getNextSongRecommendation } from '@/lib/song-recommender'
+import { createSearchRecord } from '@/lib/session'
+import { recordSearch, createOrUpdateSession } from '@/lib/redis'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -11,7 +13,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse request body
     const body = await request.json()
-    const { songTitle } = body
+    const { songTitle, sessionId } = body
 
     if (!songTitle) {
       console.log('❌ Missing songTitle in request')
@@ -29,6 +31,27 @@ export async function POST(request: NextRequest) {
     const totalApiTime = Date.now() - startTime
     console.log(`✨ API RESPONSE: Successfully found recommendation in ${totalApiTime}ms`)
     console.log(`🎯 Recommended: "${result.recommendedSong.title}" (rank #${result.recommendedSong.recommendationRank})`)
+    
+    // Track this recommendation if sessionId is provided
+    if (sessionId) {
+      try {
+        await createOrUpdateSession(sessionId)
+        const searchRecord = createSearchRecord(
+          sessionId,
+          songTitle,
+          totalApiTime,
+          'recommendation',
+          result.recommendedSong.title,
+          result.recommendedSong.videoId,
+          result.recommendedSong.title,
+          true
+        )
+        await recordSearch(searchRecord)
+        console.log('📊 Recommendation tracked successfully')
+      } catch (trackingError) {
+        console.error('⚠️ Failed to track recommendation:', trackingError)
+      }
+    }
     
     // Return success response
     return NextResponse.json({
