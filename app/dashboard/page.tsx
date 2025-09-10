@@ -47,15 +47,26 @@ export default function DashboardPage() {
       try {
         const response = await fetch('/api/dashboard')
         if (!response.ok) {
-          throw new Error('failed to fetch dashboard data')
+          const errorText = await response.text()
+          throw new Error(`failed to fetch dashboard data: ${response.status} - ${errorText}`)
         }
         const data = await response.json()
-        if (data.success) {
-          setStats(data.data)
+        if (data.success && data.data) {
+          // Validate data structure before setting
+          const validData = {
+            metrics: data.data.metrics || {
+              total: { searches: 0, plays: 0, conversionRate: 0, uniqueSessions: 0 },
+              today: { searches: 0, plays: 0, date: new Date().toISOString().split('T')[0] },
+              growth: { searches: 0, plays: 0 }
+            },
+            sessions: Array.isArray(data.data.sessions) ? data.data.sessions : []
+          }
+          setStats(validData)
         } else {
-          throw new Error(data.error || 'failed to fetch data')
+          throw new Error(data.error || 'invalid response format')
         }
       } catch (err) {
+        console.error('Dashboard fetch error:', err)
         setError(err instanceof Error ? err.message : 'unknown error occurred')
       } finally {
         setIsLoading(false)
@@ -124,22 +135,22 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">total searches</p>
-                <p className="text-2xl font-bold">{stats?.metrics.total.searches.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{stats?.metrics?.total?.searches?.toLocaleString() || '0'}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                 <Search className="w-6 h-6 text-blue-600" />
               </div>
             </div>
             <div className="flex items-center mt-4 text-sm">
-              <span className="text-muted-foreground">today: {stats?.metrics.today.searches}</span>
-              {stats && stats.metrics.growth.searches !== 0 && (
-                <div className={`ml-2 flex items-center ${stats.metrics.growth.searches > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {stats.metrics.growth.searches > 0 ? (
+              <span className="text-muted-foreground">today: {stats?.metrics?.today?.searches || 0}</span>
+              {stats && stats.metrics?.growth?.searches !== 0 && (
+                <div className={`ml-2 flex items-center ${stats.metrics?.growth?.searches > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {stats.metrics?.growth?.searches > 0 ? (
                     <TrendingUp className="w-3 h-3 mr-1" />
                   ) : (
                     <TrendingDown className="w-3 h-3 mr-1" />
                   )}
-                  <span>{Math.abs(stats.metrics.growth.searches)}%</span>
+                  <span>{Math.abs(stats.metrics?.growth?.searches || 0)}%</span>
                 </div>
               )}
             </div>
@@ -150,22 +161,22 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">total plays</p>
-                <p className="text-2xl font-bold">{stats?.metrics.total.plays.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{stats?.metrics?.total?.plays?.toLocaleString() || '0'}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <Play className="w-6 h-6 text-green-600" />
               </div>
             </div>
             <div className="flex items-center mt-4 text-sm">
-              <span className="text-muted-foreground">today: {stats?.metrics.today.plays}</span>
-              {stats && stats.metrics.growth.plays !== 0 && (
-                <div className={`ml-2 flex items-center ${stats.metrics.growth.plays > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {stats.metrics.growth.plays > 0 ? (
+              <span className="text-muted-foreground">today: {stats?.metrics?.today?.plays || 0}</span>
+              {stats && stats.metrics?.growth?.plays !== 0 && (
+                <div className={`ml-2 flex items-center ${stats.metrics?.growth?.plays > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {stats.metrics?.growth?.plays > 0 ? (
                     <TrendingUp className="w-3 h-3 mr-1" />
                   ) : (
                     <TrendingDown className="w-3 h-3 mr-1" />
                   )}
-                  <span>{Math.abs(stats.metrics.growth.plays)}%</span>
+                  <span>{Math.abs(stats.metrics?.growth?.plays || 0)}%</span>
                 </div>
               )}
             </div>
@@ -176,14 +187,14 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">unique sessions</p>
-                <p className="text-2xl font-bold">{stats?.metrics.total.uniqueSessions.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{stats?.metrics?.total?.uniqueSessions?.toLocaleString() || '0'}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                 <Music className="w-6 h-6 text-purple-600" />
               </div>
             </div>
             <div className="flex items-center mt-4 text-sm">
-              <span className="text-muted-foreground">conversion: {stats?.metrics.total.conversionRate}%</span>
+              <span className="text-muted-foreground">conversion: {stats?.metrics?.total?.conversionRate || 0}%</span>
             </div>
           </div>
 
@@ -192,14 +203,14 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">today's activity</p>
-                <p className="text-2xl font-bold">{(stats?.metrics.today.searches || 0) + (stats?.metrics.today.plays || 0)}</p>
+                <p className="text-2xl font-bold">{(stats?.metrics?.today?.searches || 0) + (stats?.metrics?.today?.plays || 0)}</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-orange-600" />
               </div>
             </div>
             <div className="flex items-center mt-4 text-sm">
-              <span className="text-muted-foreground">{stats?.metrics.today.date}</span>
+              <span className="text-muted-foreground">{stats?.metrics?.today?.date || new Date().toISOString().split('T')[0]}</span>
             </div>
           </div>
         </div>
@@ -224,28 +235,28 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {stats?.sessions.map((record, index) => (
-                  <tr key={`${record.sessionId}-${record.timestamp}`} className="border-b hover:bg-muted/20">
+                {stats?.sessions?.map((record, index) => (
+                  <tr key={`${record?.sessionId || index}-${record?.timestamp || index}`} className="border-b hover:bg-muted/20">
                     <td className="p-4 font-mono text-xs">
-                      {record.sessionId.slice(0, 8)}...
+                      {record?.sessionId?.slice(0, 8) || 'unknown'}...
                     </td>
                     <td className="p-4">
                       <span className={`px-2 py-1 rounded-full text-xs ${
-                        record.searchType === 'search' 
+                        record?.searchType === 'search' 
                           ? 'bg-blue-100 text-blue-800' 
                           : 'bg-green-100 text-green-800'
                       }`}>
-                        {record.searchType}
+                        {record?.searchType || 'unknown'}
                       </span>
                     </td>
                     <td className="p-4 text-muted-foreground">
-                      {record.searchType === 'search' ? record.query : '-'}
+                      {record?.searchType === 'search' ? (record?.query || '-') : '-'}
                     </td>
                     <td className="p-4 max-w-xs truncate">
-                      {record.youtubeTitle || record.songName || '-'}
+                      {record?.youtubeTitle || record?.songName || '-'}
                     </td>
                     <td className="p-4 font-mono text-xs">
-                      {record.videoId ? (
+                      {record?.videoId ? (
                         <a 
                           href={`https://youtube.com/watch?v=${record.videoId}`}
                           target="_blank"
@@ -257,10 +268,10 @@ export default function DashboardPage() {
                       ) : '-'}
                     </td>
                     <td className="p-4 text-muted-foreground">
-                      {record.responseTimeMs.toLocaleString()}
+                      {record?.responseTimeMs?.toLocaleString() || '0'}
                     </td>
                     <td className="p-4 text-muted-foreground text-xs">
-                      {new Date(record.timestamp).toLocaleString()}
+                      {record?.timestamp ? new Date(record.timestamp).toLocaleString() : '-'}
                     </td>
                   </tr>
                 ))}

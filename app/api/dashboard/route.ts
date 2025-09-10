@@ -32,43 +32,54 @@ export async function GET(request: NextRequest) {
     const totalUniqueSessions = activeSessions.length
     
     // Get recent search records (last 50 for performance)
-    const searchKeys = await redis.keys('search:*')
-    const recentSearchKeys = searchKeys.sort().slice(-50)
-    
-    const searchRecords: SearchRecord[] = []
-    for (const key of recentSearchKeys) {
-      try {
-        const record = await redis.get<SearchRecord>(key)
-        if (record) {
-          searchRecords.push(record)
+    let searchRecords: SearchRecord[] = []
+    try {
+      const searchKeys = await redis.keys('search:*')
+      const recentSearchKeys = Array.isArray(searchKeys) ? searchKeys.sort().slice(-50) : []
+      
+      for (const key of recentSearchKeys) {
+        try {
+          const record = await redis.get<SearchRecord>(key)
+          if (record && typeof record === 'object') {
+            searchRecords.push(record)
+          }
+        } catch (error) {
+          console.error('Error fetching search record:', key, error)
         }
-      } catch (error) {
-        console.error('Error fetching search record:', error)
       }
+    } catch (error) {
+      console.error('Error fetching search keys:', error)
+      searchRecords = []
     }
     
-    // Sort by timestamp (newest first)
-    searchRecords.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    // Sort by timestamp (newest first) - with safety check
+    if (Array.isArray(searchRecords) && searchRecords.length > 0) {
+      searchRecords.sort((a, b) => {
+        const timestampA = a?.timestamp ? new Date(a.timestamp).getTime() : 0
+        const timestampB = b?.timestamp ? new Date(b.timestamp).getTime() : 0
+        return timestampB - timestampA
+      })
+    }
 
     const stats = {
       metrics: {
         total: {
-          searches: totalSearches,
-          plays: totalPlays,
+          searches: totalSearches || 0,
+          plays: totalPlays || 0,
           conversionRate: totalSearches > 0 ? Math.round((totalPlays / totalSearches) * 100) : 0,
-          uniqueSessions: totalUniqueSessions
+          uniqueSessions: totalUniqueSessions || 0
         },
         today: {
-          searches: todaySearches,
-          plays: todayPlays,
+          searches: todaySearches || 0,
+          plays: todayPlays || 0,
           date: today
         },
         growth: {
-          searches: searchGrowth,
-          plays: playGrowth
+          searches: searchGrowth || 0,
+          plays: playGrowth || 0
         }
       },
-      sessions: searchRecords.slice(0, 30) // Return last 30 records
+      sessions: Array.isArray(searchRecords) ? searchRecords.slice(0, 30) : [] // Return last 30 records or empty array
     }
 
     return NextResponse.json({
