@@ -31,24 +31,30 @@ export async function GET(request: NextRequest) {
     const activeSessions = await redis.smembers('active_sessions') || []
     const totalUniqueSessions = activeSessions.length
     
-    // Get recent search records (last 50 for performance)
+    // Get all active sessions and their search records (using the working approach)
     let searchRecords: SearchRecord[] = []
     try {
-      const searchKeys = await redis.keys('search:*')
-      const recentSearchKeys = Array.isArray(searchKeys) ? searchKeys.sort().slice(-50) : []
+      const sessionIds = await redis.smembers('active_sessions') || []
       
-      for (const key of recentSearchKeys) {
-        try {
-          const record = await redis.get<SearchRecord>(key)
-          if (record && typeof record === 'object') {
-            searchRecords.push(record)
+      // Fetch search records for each session
+      for (const sessionId of sessionIds) {
+        const sessionSearchesKey = `session_searches:${sessionId}`
+        const searchKeys = await redis.lrange(sessionSearchesKey, 0, -1) || []
+        
+        // Get all search records for this session
+        for (const searchKey of searchKeys) {
+          try {
+            const searchRecord = await redis.get<SearchRecord>(searchKey)
+            if (searchRecord && typeof searchRecord === 'object') {
+              searchRecords.push(searchRecord)
+            }
+          } catch (error) {
+            console.error('Error fetching search record:', searchKey, error)
           }
-        } catch (error) {
-          console.error('Error fetching search record:', key, error)
         }
       }
     } catch (error) {
-      console.error('Error fetching search keys:', error)
+      console.error('Error fetching session search records:', error)
       searchRecords = []
     }
     

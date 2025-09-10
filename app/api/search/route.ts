@@ -78,8 +78,10 @@ export async function POST(request: NextRequest) {
       sessionId,
       trimmedQuery,
       responseTime,
+      'search',
       result.title,
       result.videoId,
+      result.title,
       true
     )
     await recordSearch(searchRecord)
@@ -115,6 +117,8 @@ export async function POST(request: NextRequest) {
           body.sessionId,
           body.query.trim(),
           responseTime,
+          'search',
+          undefined,
           undefined,
           undefined,
           false
