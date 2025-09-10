@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Music } from "lucide-react"
-import { getSessionIdFromBrowser } from "@/lib/get-session-id-from-browser"
+import { getSessionIdFromBrowser } from "@/lib/session"
 
 interface RecommendButtonProps {
   songTitle: string
@@ -31,6 +31,7 @@ export function RecommendButton({ songTitle, onRecommendationComplete, onRecomme
       const startTime = Date.now()
 
       const sessionId = getSessionIdFromBrowser()
+      console.log("[v0] Retrieved sessionId from browser:", sessionId)
       const requestPayload = {
         songTitle: songTitle,
         sessionId: sessionId,

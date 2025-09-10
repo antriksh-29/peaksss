@@ -328,6 +328,12 @@ export default function DashboardPage() {
             >
               refresh data
             </Button>
+            <Button 
+              onClick={() => fetchStats(1)} 
+              variant="outline"
+            >
+              load latest data
+            </Button>
           </div>
         </div>
 

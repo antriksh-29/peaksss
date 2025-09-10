@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
     // Track this recommendation if sessionId is provided
     if (sessionId) {
       try {
+        console.log('📊 Tracking recommendation with sessionId:', sessionId)
         await createOrUpdateSession(sessionId)
         const searchRecord = createSearchRecord(
           sessionId,
@@ -46,11 +47,14 @@ export async function POST(request: NextRequest) {
           result.recommendedSong.title,
           true
         )
+        console.log('📊 Created search record:', JSON.stringify(searchRecord, null, 2))
         await recordSearch(searchRecord)
-        console.log('📊 Recommendation tracked successfully')
+        console.log('📊 Recommendation tracked successfully in Redis')
       } catch (trackingError) {
         console.error('⚠️ Failed to track recommendation:', trackingError)
       }
+    } else {
+      console.log('⚠️ No sessionId provided, recommendation not tracked')
     }
     
     // Return success response
