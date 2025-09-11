@@ -105,7 +105,7 @@ function PlayPageContent() {
     )
   }
 
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?start=${start}&end=${end}&autoplay=1&controls=1&rel=0&modestbranding=1`
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?start=${start}&end=${end}&autoplay=1&mute=0&controls=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`
 
   return (
     <div className="min-h-screen bg-background p-6 relative">
@@ -135,7 +135,6 @@ function PlayPageContent() {
                 <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
                 <p className="ml-3 text-muted-foreground">finding the peak part of your song</p>
               </div>
-              <span className="text-muted-foreground/60 text-sm">(takes ~30 sec - please sit tight 🥲)</span>
             </div>
           )}
         </div>
@@ -147,7 +146,7 @@ function PlayPageContent() {
             <iframe
               src={embedUrl}
               title="YouTube video player"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; autoplay"
               allowFullScreen
               className="w-full h-full relative z-10"
             />

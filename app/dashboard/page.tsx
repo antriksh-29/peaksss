@@ -252,11 +252,11 @@ export default function DashboardPage() {
                     </td>
                     <td className="p-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        record?.searchType === 'search' 
+                        (record?.searchType === 'search' || (record?.timestamp && new Date(record.timestamp) <= new Date('2025-09-10T20:15:01Z')))
                           ? 'bg-blue-100 text-blue-800' 
                           : 'bg-green-100 text-green-800'
                       }`}>
-                        {record?.searchType === 'search' ? 'search' : 'discover'}
+                        {(record?.searchType === 'search' || (record?.timestamp && new Date(record.timestamp) <= new Date('2025-09-10T20:15:01Z'))) ? 'search' : 'discover'}
                       </span>
                     </td>
                     <td className="p-4 max-w-xs truncate">

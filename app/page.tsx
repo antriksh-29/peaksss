@@ -83,7 +83,7 @@ function HomePageContent() {
     if (searchResult) {
       const iframe = document.querySelector("iframe") as HTMLIFrameElement
       if (iframe) {
-        iframe.src = `https://www.youtube.com/embed/${searchResult.videoId}?start=${searchResult.start}&end=${searchResult.end}&autoplay=1&t=${Date.now()}`
+        iframe.src = `https://www.youtube.com/embed/${searchResult.videoId}?start=${searchResult.start}&end=${searchResult.end}&autoplay=1&mute=0&controls=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1&t=${Date.now()}`
       }
     }
   }
@@ -109,7 +109,7 @@ function HomePageContent() {
     setTimeout(() => {
       const iframe = document.querySelector("iframe") as HTMLIFrameElement
       if (iframe) {
-        iframe.src = `https://www.youtube.com/embed/${result.videoId}?start=${result.start}&end=${result.end}&autoplay=1`
+        iframe.src = `https://www.youtube.com/embed/${result.videoId}?start=${result.start}&end=${result.end}&autoplay=1&mute=0&controls=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`
       }
     }, 100)
   }
@@ -173,10 +173,10 @@ function HomePageContent() {
               <iframe
                 width="100%"
                 height="100%"
-                src={`https://www.youtube.com/embed/${searchResult.videoId}?start=${searchResult.start}&end=${searchResult.end}&autoplay=1`}
+                src={`https://www.youtube.com/embed/${searchResult.videoId}?start=${searchResult.start}&end=${searchResult.end}&autoplay=1&mute=0&controls=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`}
                 title="YouTube video player"
                 frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; autoplay"
                 allowFullScreen
                 className="w-full h-full"
               />
@@ -225,7 +225,6 @@ function HomePageContent() {
                   </div>
                   <span className="text-muted-foreground">{loadingText}</span>
                 </div>
-                <span className="text-muted-foreground/60 text-sm">(takes ~30 sec - please sit tight 🥲)</span>
               </div>
             )}
           </div>
