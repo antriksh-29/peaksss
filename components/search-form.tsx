@@ -4,7 +4,7 @@ import * as React from "react"
 import { ArrowUp, Loader2, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { getSessionIdFromBrowser } from "@/lib/get-session-id-from-browser"
+import { getSessionIdFromBrowser } from "@/lib/session"
 
 interface SearchFormProps {
   placeholder?: string

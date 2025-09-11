@@ -237,6 +237,7 @@ export default function DashboardPage() {
               <thead className="border-b bg-muted/30">
                 <tr>
                   <th className="text-left p-4 font-medium">session id</th>
+                  <th className="text-left p-4 font-medium">source</th>
                   <th className="text-left p-4 font-medium">youtube title</th>
                   <th className="text-left p-4 font-medium">video id</th>
                   <th className="text-left p-4 font-medium">time (ms)</th>
@@ -248,6 +249,15 @@ export default function DashboardPage() {
                   <tr key={`${record?.sessionId || index}-${record?.timestamp || index}`} className="border-b hover:bg-muted/20">
                     <td className="p-4 font-mono text-xs">
                       {record?.sessionId?.slice(0, 8) || 'unknown'}...
+                    </td>
+                    <td className="p-4">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        record?.searchType === 'search' 
+                          ? 'bg-blue-100 text-blue-800' 
+                          : 'bg-green-100 text-green-800'
+                      }`}>
+                        {record?.searchType === 'search' ? 'search' : 'discover'}
+                      </span>
                     </td>
                     <td className="p-4 max-w-xs truncate">
                       {record?.youtubeTitle || record?.songName || '-'}
@@ -274,7 +284,7 @@ export default function DashboardPage() {
                 ))}
                 {(!stats?.sessions || stats.sessions.length === 0) && (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                    <td colSpan={6} className="p-8 text-center text-muted-foreground">
                       no session data available
                     </td>
                   </tr>

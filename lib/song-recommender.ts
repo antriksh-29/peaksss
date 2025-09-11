@@ -32,29 +32,41 @@ export async function getSongRecommendations(songTitle: string): Promise<Recomme
   const model = genAI.getGenerativeModel({ model: 'models/gemini-2.5-flash' })
 
   const prompt = `
-You are a music expert with deep knowledge of songs, artists, and music similarity. Draw inspiration from how YouTube and Spotify recommend similar music to users.
+You are a music expert with deep knowledge of songs, artists, and music similarity. Your primary responsibility is to maintain STRICT GENRE CONSISTENCY.
 
 Given this song: "${songTitle}"
 
-Provide 3 songs that are similar in style, genre, mood, or popularity. Focus on:
-- Same genre/subgenre
+CRITICAL GENRE RULES (MUST FOLLOW):
+1. **SAME GENRE ONLY**: If the input is Punjabi music, recommend ONLY Punjabi songs. If it's English pop, recommend ONLY English pop. If it's Hindi Bollywood, recommend ONLY Hindi Bollywood songs.
+2. **SAME LANGUAGE**: Maintain the same language as the original song. Punjabi songs should get Punjabi recommendations, English songs should get English recommendations, etc.
+3. **REGIONAL CONSISTENCY**: If it's regional music (Punjabi, Tamil, Telugu, etc.), stay within that region's music scene.
+
+STRICT ANALYSIS PROCESS:
+1. First, identify the genre, language, and regional style of "${songTitle}"
+2. Then recommend 3 songs that match EXACTLY the same genre/language/region
+3. Never cross language or genre boundaries (e.g., NO English recommendations for Punjabi songs)
+
+Additional similarity factors (SECONDARY to genre matching):
 - Similar tempo and energy level
-- Same era or time period
+- Same era or time period  
 - Similar vocal style or instrumentation
-- Songs that fans of the original would likely enjoy
-- Use YouTube and Spotify's recommendation algorithms as inspiration
+- Popular songs within the same genre/language
+- Songs that fans would discover on regional music platforms
 
 For each recommendation, provide:
 1. Song title
 2. Artist name
-3. Confidence score (0.0 to 1.0) based on how similar it is
+3. Confidence score (0.0 to 1.0) based on genre similarity + other factors
 
-Rules:
+ABSOLUTE REQUIREMENTS:
+- MUST maintain exact same genre and language as input
 - Only suggest real, well-known songs that exist
 - Avoid covers, remixes, or live versions
-- Prefer popular songs that are likely to be on YouTube
+- Prefer popular songs within the same genre/language
 - Don't repeat the original song
 - Order by confidence score (highest first)
+
+If you cannot find 3 songs in the exact same genre/language, it's better to return fewer recommendations than to break genre consistency.
 
 Return JSON format:
 {

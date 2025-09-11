@@ -7,7 +7,7 @@ import { ExternalLink, RotateCcw, Home } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { SearchForm } from "@/components/search-form"
 import { Button } from "@/components/ui/button"
-import { getSessionIdFromBrowser } from "@/lib/get-session-id-from-browser"
+import { getSessionIdFromBrowser } from "@/lib/session"
 
 const trackMetric = async (type: string, videoId: string) => {
   try {
